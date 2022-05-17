@@ -8,3 +8,17 @@ html, body{
     box-sizing: border-box;
     // display: flexbox;
 }
+
+
+body {
+    font-family: 'Anaheim', sans-serif;
+    padding: 0;
+    margin: 0;
+    background: #f7f6f2;
+    overflow: hidden;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+         -o-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
