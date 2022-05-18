@@ -1,5 +1,7 @@
 # How To Use fabric-brash on your project
 
+## 方案 A
+
 1.  安装相关依赖
 
         npm install fabric --save-dev
@@ -27,7 +29,7 @@
 3.  声明全局变量在`src/typings.d.ts`
     declear var fabric: any;
 
-4.app.component.tt
+4. 在`app.component.ts`写如下代码：
 
     import {
         AfterViewInit, Component, ElementRef,
@@ -62,3 +64,11 @@
                 });
             }
         }
+
+## 方案 B
+
+该方案参考: [codePen](https://codepen.io/userluckytian/pen/zYRoVww?editors=0011)，我把es5的写法转为了es6的写法。
+
+所有代码都在`app/components/test`文件夹下！
+
+不需要安装任何依赖呦~ o(*￣▽￣*)ブ
