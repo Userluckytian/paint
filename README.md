@@ -1,37 +1,74 @@
-# Angular
+# How To Use fabric-brash on your project
 
-This directory is a brief example of an [Angular](https://angular.io/) app that can be deployed to Vercel with zero configuration.
+## 方案 A
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.1.3.
+1.  安装相关依赖
 
-## Deploy Your Own
+        npm install fabric --save-dev
+        npm install fabric-brush --save-dev
 
-Deploy your own Angular project with Vercel.
+2.  引入相关 js 包
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/vercel/tree/main/examples/angular&template=angular)
+        angular.json
 
-_Live Example: https://angular-template.vercel.app_
+        projectsname: {
+           architect:{
+               build:{
+                   options:{
+                       scripts:{
+                           ...
+                           "./node_modules/fabric/dist/fabric.min.js",
+                           "./node_modules/fabric-brush/dist/fabric-brush.js"
+                           ...
+                       }
+                   }
+               }
+           }
+        }
 
-## Development server
+3.  声明全局变量在`src/typings.d.ts`
+    declear var fabric: any;
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+4. 在`app.component.ts`写如下代码：
 
-## Code scaffolding
+    import {
+        AfterViewInit, Component, ElementRef,
+        NgZone, OnInit, ViewChild } from '@angular/core';
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+        @Component({
+        selector: 'app-root',
+        templateUrl: './app.component.html',
+        styleUrls: ['./app.component.scss']
+        })
+        export class AppComponent implements OnInit, AfterViewInit {
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+            ngOnInit(): void {}
 
-## Running unit tests
+            ngAfterViewInit(): void {
+                    this.initPaint();
+            }
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+            /** 实例化画笔
+            @memberof AppComponent
+            */
+            initPaint() {
+                const canvas = new fabric.Canvas('canvas', {
+                    isDrawingMode: true
+                });
+                // Ink Brush
+                canvas.freeDrawingBrush = new fabric.InkBrush(canvas, {
+                    width: 16,
+                    opacity: 0.6,
+                    color: "#ff0082"
+                });
+            }
+        }
 
-## Running end-to-end tests
+## 方案 B
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+该方案参考: [codePen](https://codepen.io/userluckytian/pen/zYRoVww?editors=0011)，我把es5的写法转为了es6的写法。
 
-## Further help
+所有代码都在`app/components/test`文件夹下！
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+不需要安装任何依赖呦~ o(*￣▽￣*)ブ

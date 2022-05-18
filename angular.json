@@ -32,7 +32,10 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "./node_modules/fabric/dist/fabric.min.js",
+              "./node_modules/fabric-brush/dist/fabric-brush.js"
+            ]
           },
           "configurations": {
             "production": {
