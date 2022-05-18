@@ -15,9 +15,11 @@ export class Brush {
     _drops: any[] = [];
     _tip: any[] = [];
 
-    constructor(x: number, y: number, color: string, size?: number, inkAmount?: number) {
-        this.x = x || 0;
-        this.y = y || 0;
+    constructor(x: number = 0, y: number = 0, color?: string, size?: number, inkAmount?: number) {
+        console.log(x, y, color);
+        
+        this.x = x;
+        this.y = y
         if (color !== undefined) this.color = color;
         if (size !== undefined) this.size = size;
         if (inkAmount !== undefined) this.inkAmount = inkAmount;

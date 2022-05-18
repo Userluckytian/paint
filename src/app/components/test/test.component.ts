@@ -24,10 +24,94 @@ export class TestComponent implements OnInit, AfterViewInit {
   guiSizeCtr: any;
   guiIsRandColorCtr: any;
   touched = false;
+  loop!: () => void;
+  mouseDown!: (e: {
+    clientX: any; clientY: any;
+  }) => void;
+  mouseUp!: (e: any) => void;
+  touchStart!: (e: any) => void;
+  touchEnd!: (e: any) => void;
+  touchMove!: (e: any) => void;
+  mouseMove!: (e: any) => void;
 
   constructor() { }
 
+
   ngOnInit() {
+    this.initListenerEvent()
+  }
+  /**
+   * 实例化监听事件
+   *
+   * @memberof TestComponent
+   */
+  initListenerEvent() {
+    this.brush = new Brush(this.centerX, this.centerY, this.randomColor());
+
+    // 声明全局变量loop
+    this.loop = () => {
+      if (this.brush) {
+        this.brush.render(this.context, this.mouseX, this.mouseY);
+      }
+      requestAnimationFrame(this.loop); // 回调自己
+    };
+    this.mouseMove = (e: any) => {
+      this.mouseX = e.clientX;
+      this.mouseY = e.clientY;
+    };
+
+    this.mouseDown = (e: { clientX: any; clientY: any; }) => {
+      this.brush.color = this.randomColor();
+      this.mouseX = e.clientX;
+      this.mouseY = e.clientY;
+      if (this.brush) {
+        if (this.control && this.control.isRandomColor) {
+          this.brush.color = this.randomColor();
+        }
+        if (this.control && this.control.isRandomSize) {
+          this.brush.size = this.random(51, 5) | 0;
+        }
+        this.brush.startStroke(this.mouseX, this.mouseY);
+      }
+    };
+
+    this.mouseUp = (e: any) => {
+      if (this.brush) {
+        this.brush.endStroke();
+      }
+    };
+
+    this.touchMove = (e: any) => {
+      var t = e.touches[0];
+      this.mouseX = t.clientX;
+      this.mouseY = t.clientY;
+    };
+
+    this.touchStart = (e: any) => {
+      if (this.touched) return;
+      this.touched = true;
+
+      var t = e.touches[0];
+      this.mouseX = t.clientX;
+      this.mouseY = t.clientY;
+      if (this.brush) {
+        if (this.control && this.control.isRandomColor) {
+          this.brush.color = this.randomColor();
+        }
+        if (this.control && this.control.isRandomSize) {
+          this.brush.size = this.random(51, 5) | 0;
+        }
+        this.brush.startStroke(this.mouseX, this.mouseY);
+      }
+    };
+
+    this.touchEnd = (e: any) => {
+      this.touched = false;
+      if (this.brush) {
+        this.brush.endStroke();
+      }
+    };
+
   }
 
   ngAfterViewInit(): void {
@@ -35,9 +119,6 @@ export class TestComponent implements OnInit, AfterViewInit {
     window.requestAnimationFrame = this.getAnimationFrame();
 
     this.canvas = document.getElementById('c');
-
-    this.brush = new Brush(this.centerX, this.centerY, this.randomColor());
-    console.log('🚀 ~ this.brush', this.brush);
 
     window.addEventListener('resize', this.resize, false);
     // 默认执行一次清除操作
@@ -89,53 +170,6 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
   }
 
-  mouseMove(e: { clientX: any; clientY: any; }) {
-    this.mouseX = e.clientX;
-    this.mouseY = e.clientY;
-  }
-
-  mouseDown(e: { clientX: any; clientY: any; }) {
-    this.mouseX = e.clientX;
-    this.mouseY = e.clientY;
-    if (this.control.isRandomColor) {
-      this.brush.color = this.randomColor();
-    }
-    if (this.control.isRandomSize) {
-      this.brush.size = this.random(51, 5) | 0;
-    }
-    this.brush.startStroke(this.mouseX, this.mouseY);
-  }
-
-  mouseUp(e: any) {
-    this.brush.endStroke();
-  }
-
-  touchMove(e: { touches: any[]; }) {
-    var t = e.touches[0];
-    this.mouseX = t.clientX;
-    this.mouseY = t.clientY;
-  }
-
-  touchStart(e: { touches: any[]; }) {
-    if (this.touched) return;
-    this.touched = true;
-
-    var t = e.touches[0];
-    this.mouseX = t.clientX;
-    this.mouseY = t.clientY;
-    if (this.control.isRandomColor) {
-      this.brush.color = this.randomColor();
-    }
-    if (this.control.isRandomSize) {
-      this.brush.size = this.random(51, 5) | 0;
-    }
-    this.brush.startStroke(this.mouseX, this.mouseY);
-  }
-
-  touchEnd(e: any) {
-    this.touched = false;
-    this.brush.endStroke();
-  }
 
   randomColor() {
     let r = this.random(256) | 0;
@@ -153,9 +187,5 @@ export class TestComponent implements OnInit, AfterViewInit {
     return Math.random() * (max - min) + min;
   }
 
-  loop() {
-    console.log(this.brush);
-    this.brush.render(this.context, this.mouseX, this.mouseY);
-    requestAnimationFrame(this.loop); // 回调自己
-  };
+
 }

@@ -1,12 +1,12 @@
 class Drop {
-    x = 0;
-    y = 0;
-    size = 7;
-    color = '#000';
+    x: number = 0;
+    y: number = 0;
+    size: number = 7;
+    color: string = '#000';
     strokeId: string | null = null;
-    life = 0;
-    _latestPos: { [x: string]: number };
-    _xOffRatio = 0;
+    life: number = 0;
+    _latestPos: { [key: string]: number };
+    _xOffRatio: number = 0;
 
 
     constructor(x: number, y: number, size: number, color: string, strokeId: string | null) {

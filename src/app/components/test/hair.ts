@@ -1,9 +1,9 @@
 class Hair {
-    x = 0;
-    y = 0;
-    inkAmount = 7;
-    color = '#000';
-    _latestPos: { [x: string]: number };
+    x: number = 0;
+    y: number = 0;
+    inkAmount: number = 7;
+    color: string = '#000';
+    _latestPos: { [key: string]: number };
 
     constructor(x: number, y: number, inkAmount: number, color: string) {
         this.x = x || 0;
@@ -14,7 +14,7 @@ class Hair {
         this._latestPos = { x: this.x, y: this.y };
     }
 
-    render(ctx: { save: () => void; lineCap: string; lineJoin: string; strokeStyle: string; lineWidth: number; beginPath: () => void; moveTo: (arg0: number, arg1: number) => void; lineTo: (arg0: number, arg1: number) => void; stroke: () => void; restore: () => void; }, offsetX: number, offsetY: number, offsetLength: number) {
+    render(ctx: any, offsetX: number, offsetY: number, offsetLength: number) {
         this._latestPos["x"] = this.x;
         this._latestPos["y"] = this.y;
         this.x += offsetX;
