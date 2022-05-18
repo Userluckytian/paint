@@ -17,7 +17,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   mouseX = 0;
   mouseY = 0;
   isMouseDown = false;
-  brush!: Brush;
+  brush: any; // brush实例对象！
   gui: any;
   control: any;
   guiColorCtr: any;
@@ -37,6 +37,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.canvas = document.getElementById('c');
 
     this.brush = new Brush(this.centerX, this.centerY, this.randomColor());
+    console.log('🚀 ~ this.brush', this.brush);
 
     window.addEventListener('resize', this.resize, false);
     // 默认执行一次清除操作
@@ -83,7 +84,9 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.centerX = this.canvas.width * 0.5;
     this.centerY = this.canvas.height * 0.5;
     this.context = this.canvas.getContext('2d');
-    this.control.clear();
+    if (this.control) {
+      this.control.clear();
+    }
   }
 
   mouseMove(e: { clientX: any; clientY: any; }) {
@@ -151,6 +154,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   loop() {
+    console.log(this.brush);
     this.brush.render(this.context, this.mouseX, this.mouseY);
     requestAnimationFrame(this.loop); // 回调自己
   };
