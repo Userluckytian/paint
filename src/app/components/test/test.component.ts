@@ -33,7 +33,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   touchEnd!: (e: any) => void;
   touchMove!: (e: any) => void;
   mouseMove!: (e: any) => void;
-
+  backTheme: 'dark' | 'light' = 'light';
   constructor() { }
 
 
@@ -186,6 +186,39 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
     return Math.random() * (max - min) + min;
   }
+
+
+  /**
+   * 改变背景颜色
+   *
+   * @memberof TestComponent
+   */
+  changeBack() {
+    if (this.backTheme === 'dark') {
+      this.backTheme = 'light';
+    } else if (this.backTheme === 'light') {
+      this.backTheme = 'dark';
+    }
+  }
+  /**
+   * 清空绘制
+   *
+   * @memberof TestComponent
+   */
+  clearDraw() {
+    this.resize(null);
+  }
+
+  /**
+   * 保存为图片
+   *
+   * @memberof TestComponent
+   */
+  savePaint() {
+  }
+
+
+
 
 
 }
