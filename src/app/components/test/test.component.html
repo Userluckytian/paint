@@ -12,8 +12,8 @@
             <!-- 自动绘制 -->
             <div class="item auto-paint">
                 <span>Automatic Paint：</span>
-                <div class="switch-btn">
-                    <input type="checkbox" id="switch" />
+                <div class="switch-btn" (click)="changeAutoDrawStauts()">
+                    <input type="checkbox" id="switch" [(ngModel)]="!autoDraw"/>
                     <label for="switch"></label>
                 </div>
             </div>

@@ -134,10 +134,16 @@ canvas {
     width: 0;
     visibility: hidden;
     display: none;
+    // 用来校验滑动按钮事件
+    // height: 50;
+    // width: 50;
+    // visibility: visible;
+    // display: block;
   }
 
   label {
     cursor: pointer;
+    pointer-events: none;
     width: 100%;
     height: 100%;
     background: #ebf7fc;

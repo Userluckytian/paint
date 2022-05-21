@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { AppComponent } from './app.component';
 import { AppRoutes } from './app.routing';
 import { TestComponent } from './components/test/test.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { TestComponent } from './components/test/test.component';
   imports: [
     AppRoutes,
     BrowserModule,
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

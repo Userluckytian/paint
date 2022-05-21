@@ -36,6 +36,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   backTheme: 'dark' | 'light' = 'light';
   @ViewChild('save') aLinkDom!: ElementRef;
   pickr!: Pickr;
+  autoDraw: boolean = true;
   constructor() { }
 
 
@@ -242,7 +243,36 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * 清除自动绘制操作
+   *
+   * @memberof TestComponent
+   */
+  changeAutoDrawStauts() {
+    this.autoDraw = !this.autoDraw;
+    console.log('hello', this.autoDraw);
+    if (this.autoDraw) {
+      // todo: 自动绘制
+      let ctx: any = null;
+      if (!this.context) {
+        ctx = this.canvas.getContext("2d");
+      } else {
+        ctx = this.context
+      }
+      this.doAutoDraw(ctx, this.canvas.width, this.canvas.height);
+    }
+  }
 
+  doAutoDraw(ctx: any, width: number, height: number) {
+    // var i = 0;
+    // const draw = () => {
+    //   ctx.moveTo(this.random(width), this.random(height));
+    //   ctx.quadraticCurveTo(this.random(width), this.random(height), this.random(width), this.random(height));
+    //   ctx.stroke();
+    //   window.requestAnimationFrame(draw);
+    // }
+    // draw();
+  }
   randomColor() {
     let r = this.random(256) | 0;
     let g = this.random(256) | 0;
