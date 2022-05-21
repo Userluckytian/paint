@@ -35,6 +35,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   mouseMove!: (e: any) => void;
   backTheme: 'dark' | 'light' = 'light';
   @ViewChild('save') aLinkDom!: ElementRef;
+  pickr!: Pickr;
   constructor() { }
 
 
@@ -48,7 +49,7 @@ export class TestComponent implements OnInit, AfterViewInit {
    * @memberof TestComponent
    */
   initListenerEvent() {
-    this.brush = new Brush(this.centerX, this.centerY, this.randomColor());
+    this.brush = new Brush(this.centerX, this.centerY);
 
     // 声明全局变量loop
     this.loop = () => {
@@ -63,13 +64,14 @@ export class TestComponent implements OnInit, AfterViewInit {
     };
 
     this.mouseDown = (e: { clientX: any; clientY: any; }) => {
-      this.brush.color = this.randomColor();
       this.mouseX = e.clientX;
       this.mouseY = e.clientY;
       if (this.brush) {
+        // 不会执行的代码
         if (this.control && this.control.isRandomColor) {
           this.brush.color = this.randomColor();
         }
+        // 不会执行的代码
         if (this.control && this.control.isRandomSize) {
           this.brush.size = this.random(51, 5) | 0;
         }
@@ -97,9 +99,11 @@ export class TestComponent implements OnInit, AfterViewInit {
       this.mouseX = t.clientX;
       this.mouseY = t.clientY;
       if (this.brush) {
+        // 不会执行的代码
         if (this.control && this.control.isRandomColor) {
           this.brush.color = this.randomColor();
         }
+        // 不会执行的代码
         if (this.control && this.control.isRandomSize) {
           this.brush.size = this.random(51, 5) | 0;
         }
@@ -145,7 +149,7 @@ export class TestComponent implements OnInit, AfterViewInit {
    * @memberof TestComponent
    */
   initColorSelector() {
-    const pickr = Pickr.create({
+    this.pickr = Pickr.create({
       el: '.color-picker',
       theme: 'nano', // 'classic', // or 'monolith', or 'nano'
 
@@ -157,13 +161,13 @@ export class TestComponent implements OnInit, AfterViewInit {
         'rgba(63, 81, 181, 0.8)',
         'rgba(33, 150, 243, 0.75)',
         'rgba(3, 169, 244, 0.7)',
-        'rgba(0, 188, 212, 0.7)',
-        'rgba(0, 150, 136, 0.75)',
-        'rgba(76, 175, 80, 0.8)',
-        'rgba(139, 195, 74, 0.85)',
-        'rgba(205, 220, 57, 0.9)',
-        'rgba(255, 235, 59, 0.95)',
-        'rgba(255, 193, 7, 1)'
+        // 'rgba(0, 188, 212, 0.7)',
+        // 'rgba(0, 150, 136, 0.75)',
+        // 'rgba(76, 175, 80, 0.8)',
+        // 'rgba(139, 195, 74, 0.85)',
+        // 'rgba(205, 220, 57, 0.9)',
+        // 'rgba(255, 235, 59, 0.95)',
+        // 'rgba(255, 193, 7, 1)'
       ],
 
       components: {
@@ -176,18 +180,35 @@ export class TestComponent implements OnInit, AfterViewInit {
         // Input / output Options
         interaction: {
           hex: true,
-          rgba: true,
-          hsla: true,
-          hsva: true,
-          cmyk: true,
+          // rgba: true,
+          // hsla: true,
+          // hsva: true,
+          // cmyk: true,
           input: true,
           clear: true,
           save: true
         }
       }
     });
+    this.addColorListener(this.pickr);
   }
-
+  /**
+   * 添加颜色变化监听事件
+   *
+   * @param {Pickr} pickr
+   * @memberof TestComponent
+   */
+  addColorListener(pickr: Pickr) {
+    pickr.on('save', (color: any, instance: any) => {
+      if (color) {
+        this.brush.color = color.toHEXA().toString();
+      } else {
+        this.brush.color = '#42445a';
+        pickr.setColor('#42445a');
+      }
+      pickr.hide();
+    });
+  }
   /**
    * 获取 requestAnimationFrame 
    * 参考文献（下面代码是获取不同浏览器的AnimationFrame）
@@ -215,6 +236,7 @@ export class TestComponent implements OnInit, AfterViewInit {
       this.centerY = this.canvas.height * 0.5;
       this.context = this.canvas.getContext('2d');
     }
+    // 不会执行的代码
     if (this.control) {
       this.control.clear();
     }
@@ -298,7 +320,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     newCanvas.width = oldCanvas.width;
     newCanvas.height = oldCanvas.height;
 
-    context.fillStyle =  this.backTheme === 'light' ? "#f4e3cf" : "#212121";
+    context.fillStyle = this.backTheme === 'light' ? "#f4e3cf" : "#212121";
     context.fillRect(0, 0, newCanvas.width, newCanvas.height);
     context.save();
 
@@ -329,6 +351,11 @@ export class TestComponent implements OnInit, AfterViewInit {
     };
     image.src = base64Data;
   }
+
+  ngOnDestroy(): void {
+    this.pickr.destroy();
+  }
+
 
 
 }
