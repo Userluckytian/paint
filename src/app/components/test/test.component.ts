@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Brush } from './brush';
-
+import Pickr from '@simonwep/pickr';
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
@@ -33,12 +33,16 @@ export class TestComponent implements OnInit, AfterViewInit {
   touchEnd!: (e: any) => void;
   touchMove!: (e: any) => void;
   mouseMove!: (e: any) => void;
-
+  backTheme: 'dark' | 'light' = 'light';
+  @ViewChild('save') aLinkDom!: ElementRef;
+  pickr!: Pickr;
+  autoDraw: boolean = true;
   constructor() { }
 
 
   ngOnInit() {
-    this.initListenerEvent()
+    this.initColorSelector();
+    this.initListenerEvent();
   }
   /**
    * 实例化监听事件
@@ -46,7 +50,7 @@ export class TestComponent implements OnInit, AfterViewInit {
    * @memberof TestComponent
    */
   initListenerEvent() {
-    this.brush = new Brush(this.centerX, this.centerY, this.randomColor());
+    this.brush = new Brush(this.centerX, this.centerY);
 
     // 声明全局变量loop
     this.loop = () => {
@@ -61,13 +65,14 @@ export class TestComponent implements OnInit, AfterViewInit {
     };
 
     this.mouseDown = (e: { clientX: any; clientY: any; }) => {
-      this.brush.color = this.randomColor();
       this.mouseX = e.clientX;
       this.mouseY = e.clientY;
       if (this.brush) {
+        // 不会执行的代码
         if (this.control && this.control.isRandomColor) {
           this.brush.color = this.randomColor();
         }
+        // 不会执行的代码
         if (this.control && this.control.isRandomSize) {
           this.brush.size = this.random(51, 5) | 0;
         }
@@ -95,9 +100,11 @@ export class TestComponent implements OnInit, AfterViewInit {
       this.mouseX = t.clientX;
       this.mouseY = t.clientY;
       if (this.brush) {
+        // 不会执行的代码
         if (this.control && this.control.isRandomColor) {
           this.brush.color = this.randomColor();
         }
+        // 不会执行的代码
         if (this.control && this.control.isRandomSize) {
           this.brush.size = this.random(51, 5) | 0;
         }
@@ -137,9 +144,72 @@ export class TestComponent implements OnInit, AfterViewInit {
     // Start Update
     this.loop();
   }
+  /**
+   * 实例化颜色选择器
+   *
+   * @memberof TestComponent
+   */
+  initColorSelector() {
+    this.pickr = Pickr.create({
+      el: '.color-picker',
+      theme: 'nano', // 'classic', // or 'monolith', or 'nano'
 
+      swatches: [
+        'rgba(244, 67, 54, 1)',
+        'rgba(233, 30, 99, 0.95)',
+        'rgba(156, 39, 176, 0.9)',
+        'rgba(103, 58, 183, 0.85)',
+        'rgba(63, 81, 181, 0.8)',
+        'rgba(33, 150, 243, 0.75)',
+        'rgba(3, 169, 244, 0.7)',
+        // 'rgba(0, 188, 212, 0.7)',
+        // 'rgba(0, 150, 136, 0.75)',
+        // 'rgba(76, 175, 80, 0.8)',
+        // 'rgba(139, 195, 74, 0.85)',
+        // 'rgba(205, 220, 57, 0.9)',
+        // 'rgba(255, 235, 59, 0.95)',
+        // 'rgba(255, 193, 7, 1)'
+      ],
 
+      components: {
 
+        // Main components
+        preview: true,
+        opacity: true,
+        hue: true,
+
+        // Input / output Options
+        interaction: {
+          hex: true,
+          // rgba: true,
+          // hsla: true,
+          // hsva: true,
+          // cmyk: true,
+          input: true,
+          clear: true,
+          save: true
+        }
+      }
+    });
+    this.addColorListener(this.pickr);
+  }
+  /**
+   * 添加颜色变化监听事件
+   *
+   * @param {Pickr} pickr
+   * @memberof TestComponent
+   */
+  addColorListener(pickr: Pickr) {
+    pickr.on('save', (color: any, instance: any) => {
+      if (color) {
+        this.brush.color = color.toHEXA().toString();
+      } else {
+        this.brush.color = '#42445a';
+        pickr.setColor('#42445a');
+      }
+      pickr.hide();
+    });
+  }
   /**
    * 获取 requestAnimationFrame 
    * 参考文献（下面代码是获取不同浏览器的AnimationFrame）
@@ -160,17 +230,49 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   resize(e: any) {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
-    this.centerX = this.canvas.width * 0.5;
-    this.centerY = this.canvas.height * 0.5;
-    this.context = this.canvas.getContext('2d');
+    if (this.canvas) {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      this.centerX = this.canvas.width * 0.5;
+      this.centerY = this.canvas.height * 0.5;
+      this.context = this.canvas.getContext('2d');
+    }
+    // 不会执行的代码
     if (this.control) {
       this.control.clear();
     }
   }
 
+  /**
+   * 清除自动绘制操作
+   *
+   * @memberof TestComponent
+   */
+  changeAutoDrawStauts() {
+    this.autoDraw = !this.autoDraw;
+    console.log('hello', this.autoDraw);
+    if (this.autoDraw) {
+      // todo: 自动绘制
+      let ctx: any = null;
+      if (!this.context) {
+        ctx = this.canvas.getContext("2d");
+      } else {
+        ctx = this.context
+      }
+      this.doAutoDraw(ctx, this.canvas.width, this.canvas.height);
+    }
+  }
 
+  doAutoDraw(ctx: any, width: number, height: number) {
+    // var i = 0;
+    // const draw = () => {
+    //   ctx.moveTo(this.random(width), this.random(height));
+    //   ctx.quadraticCurveTo(this.random(width), this.random(height), this.random(width), this.random(height));
+    //   ctx.stroke();
+    //   window.requestAnimationFrame(draw);
+    // }
+    // draw();
+  }
   randomColor() {
     let r = this.random(256) | 0;
     let g = this.random(256) | 0;
@@ -186,6 +288,104 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
     return Math.random() * (max - min) + min;
   }
+
+
+  /**
+   * 改变背景颜色
+   *
+   * @memberof TestComponent
+   */
+  changeBack() {
+    if (this.backTheme === 'dark') {
+      this.backTheme = 'light';
+    } else if (this.backTheme === 'light') {
+      this.backTheme = 'dark';
+    }
+  }
+  /**
+   * 清空绘制
+   *
+   * @memberof TestComponent
+   */
+  clearDraw() {
+    this.resize(null);
+  }
+
+  /**
+   * 保存为图片
+   *
+   * @memberof TestComponent
+   */
+  savePaint() {
+    this.addBackgroundColor()
+  }
+
+  /**
+   * 给canvas加背景颜色
+   *
+   * @memberof TestComponent
+   */
+  addBackgroundColor() {
+    const createCanvas = this.cloneCanvas(this.canvas);
+    let newImgData = createCanvas.toDataURL("image/png");
+    // 已经拿到数据了，这个时候就可以清空创建的canvas了
+    this.downLoadPng(newImgData)
+
+  }
+
+  /**
+   * 克隆旧的canvas
+   *
+   * @param {*} oldCanvas
+   * @return {*} 
+   * @memberof TestComponent
+   */
+  cloneCanvas(oldCanvas: HTMLCanvasElement) {
+
+    //create a new canvas
+    const newCanvas = document.createElement('canvas');
+    const context = newCanvas.getContext('2d') as any;
+
+    //set dimensions
+    newCanvas.width = oldCanvas.width;
+    newCanvas.height = oldCanvas.height;
+
+    context.fillStyle = this.backTheme === 'light' ? "#f4e3cf" : "#212121";
+    context.fillRect(0, 0, newCanvas.width, newCanvas.height);
+    context.save();
+
+    //apply the old canvas to the new one
+    context.drawImage(oldCanvas, 0, 0);
+
+    //return the new canvas
+    return newCanvas;
+  }
+
+
+  /**
+   *
+   *
+   * @param {*} base64Data
+   * @memberof TestComponent
+   */
+  downLoadPng(base64Data: string) {
+    const image = new Image();
+    // 解决跨域 Canvas 污染问题
+    image.setAttribute("crossOrigin", "anonymous");
+    image.onload = () => {
+      let saveDom = document.createElement("a"); // 生成一个a元素
+      let event = new MouseEvent("click"); // 创建一个单击事件
+      saveDom.download = new Date().toLocaleString() + "手绘素材"; // 设置图片名称
+      saveDom.href = base64Data; // 将生成的URL设置为a.href属性
+      saveDom.dispatchEvent(event); // 触发a的单击事件
+    };
+    image.src = base64Data;
+  }
+
+  ngOnDestroy(): void {
+    this.pickr.destroy();
+  }
+
 
 
 }

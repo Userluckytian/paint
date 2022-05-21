@@ -5,9 +5,9 @@ export class Brush {
 
     x = 0;
     y = 0;
-    color = '#000';
-    size = 35;
-    inkAmount = 7;
+    color = '#42445a';
+    size = 20; // 画笔尺寸
+    inkAmount = 5; // 下滴墨水的宽度
     splashing = true;
     dripping = true;
     _latestPos: { [key: string]: number } | null = null;
