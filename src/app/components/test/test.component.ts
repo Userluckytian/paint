@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Brush } from './brush';
 import Pickr from '@simonwep/pickr';
 @Component({
@@ -34,6 +34,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   touchMove!: (e: any) => void;
   mouseMove!: (e: any) => void;
   backTheme: 'dark' | 'light' = 'light';
+  @ViewChild('save') aLinkDom!: ElementRef;
   constructor() { }
 
 
@@ -207,11 +208,13 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   resize(e: any) {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
-    this.centerX = this.canvas.width * 0.5;
-    this.centerY = this.canvas.height * 0.5;
-    this.context = this.canvas.getContext('2d');
+    if (this.canvas) {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      this.centerX = this.canvas.width * 0.5;
+      this.centerY = this.canvas.height * 0.5;
+      this.context = this.canvas.getContext('2d');
+    }
     if (this.control) {
       this.control.clear();
     }
@@ -262,10 +265,70 @@ export class TestComponent implements OnInit, AfterViewInit {
    * @memberof TestComponent
    */
   savePaint() {
+    this.addBackgroundColor()
+  }
+
+  /**
+   * 给canvas加背景颜色
+   *
+   * @memberof TestComponent
+   */
+  addBackgroundColor() {
+    const createCanvas = this.cloneCanvas(this.canvas);
+    let newImgData = createCanvas.toDataURL("image/png");
+    // 已经拿到数据了，这个时候就可以清空创建的canvas了
+    this.downLoadPng(newImgData)
+
+  }
+
+  /**
+   * 克隆旧的canvas
+   *
+   * @param {*} oldCanvas
+   * @return {*} 
+   * @memberof TestComponent
+   */
+  cloneCanvas(oldCanvas: HTMLCanvasElement) {
+
+    //create a new canvas
+    const newCanvas = document.createElement('canvas');
+    const context = newCanvas.getContext('2d') as any;
+
+    //set dimensions
+    newCanvas.width = oldCanvas.width;
+    newCanvas.height = oldCanvas.height;
+
+    context.fillStyle =  this.backTheme === 'light' ? "#f4e3cf" : "#212121";
+    context.fillRect(0, 0, newCanvas.width, newCanvas.height);
+    context.save();
+
+    //apply the old canvas to the new one
+    context.drawImage(oldCanvas, 0, 0);
+
+    //return the new canvas
+    return newCanvas;
   }
 
 
-
+  /**
+   *
+   *
+   * @param {*} base64Data
+   * @memberof TestComponent
+   */
+  downLoadPng(base64Data: string) {
+    const image = new Image();
+    // 解决跨域 Canvas 污染问题
+    image.setAttribute("crossOrigin", "anonymous");
+    image.onload = () => {
+      let saveDom = document.createElement("a"); // 生成一个a元素
+      let event = new MouseEvent("click"); // 创建一个单击事件
+      saveDom.download = new Date().toLocaleString() + "手绘素材"; // 设置图片名称
+      saveDom.href = base64Data; // 将生成的URL设置为a.href属性
+      saveDom.dispatchEvent(event); // 触发a的单击事件
+    };
+    image.src = base64Data;
+  }
 
 
 }

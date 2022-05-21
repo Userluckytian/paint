@@ -98,26 +98,30 @@ canvas {
 }
 
 .cursor-light {
+  transition: background-color 1.5s;
   background-color: #f4e3cf; // 白天好看
   cursor: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3CclipPath id='a'%3E%3Cpath d='M0 0h100v100H0z'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M50 0a50 50 0 100 100A50 50 0 0050 0zm0 4a46 46 0 110 92 46 46 0 010-92z'/%3E%3C/g%3E%3C/svg%3E%0A")
       12 12,
     auto; // 白天好看
+  animation: 2.5s cubic-bezier(0.25, 1, 0.3, 1) bg-switch-to-light 1;
 }
 
 .cursor-dark {
+  transition: background-color 1.5s;
   background-color: #212121; // 晚上好看
   cursor: url("data:image/svg+xml;base64,PHN2ZyB0PSIxNjUyOTczOTI5MzU5IiBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjY1ODMiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiI+PHBhdGggZD0iTTUxMiA2NS45ODE0NGMtMjQ1LjkxODcyIDAtNDQ2LjAxODU2IDIwMC4wOTQ3Mi00NDYuMDE4NTYgNDQ2LjAxODU2IDAgMjQ1Ljk1NDU2IDIwMC4wNjQgNDQ2LjAxODU2IDQ0Ni4wMTg1NiA0NDYuMDE4NTZzNDQ2LjAxODU2LTIwMC4wNjQgNDQ2LjAxODU2LTQ0Ni4wMTg1NmMwLTI0NS45MTg3Mi0yMDAuMDY0LTQ0Ni4wMTg1Ni00NDYuMDE4NTYtNDQ2LjAxODU2eiBtMCA4MjguMDM3MTJjLTIxMC42NTcyOCAwLTM4Mi4wMTg1Ni0xNzEuMzkyLTM4Mi4wMTg1Ni0zODIuMDE4NTYgMC0yMTAuNjU3MjggMTcxLjM2MTI4LTM4Mi4wMTg1NiAzODIuMDE4NTYtMzgyLjAxODU2IDIxMC42MjY1NiAwIDM4Mi4wMTg1NiAxNzEuMzYxMjggMzgyLjAxODU2IDM4Mi4wMTg1NiAwIDIxMC42MjY1Ni0xNzEuMzkyIDM4Mi4wMTg1Ni0zODIuMDE4NTYgMzgyLjAxODU2eiIgcC1pZD0iNjU4NCIgZmlsbD0iI2ZmZmZmZiI+PC9wYXRoPjwvc3ZnPg==")
       12 12,
     auto; // 晚上好看
+  animation: 2.5s cubic-bezier(0.25, 1, 0.3, 1) bg-switch-to-dark 1;
 }
 
 .light {
-  animation: 1.5s cubic-bezier(0.25, 1, 0.3, 1) circle-in-bottom-right 1;
+  animation: 2s cubic-bezier(0.25, 1, 0.3, 1) toLight 1;
   background-color: #f4e3cf;
 }
 
 .dark {
-  animation: 1.5s cubic-bezier(0.25, 1, 0.3, 1) circle-in-top-left 1;
+  animation: 2s cubic-bezier(0.25, 1, 0.3, 1) toDark 1;
   background-color: #212121;
 }
 
@@ -176,8 +180,8 @@ canvas {
   }
 }
 
-// 切换
-@keyframes circle-in-bottom-right {
+// 切换btn背景
+@keyframes toLight {
   from {
     clip-path: circle(0% at top left);
   }
@@ -186,13 +190,38 @@ canvas {
   }
 }
 
-// 切换背景
-@keyframes circle-in-top-left {
+// 切换btn背景
+@keyframes toDark {
   from {
     clip-path: circle(0% at top left);
   }
   to {
     clip-path: circle(125%);
+  }
+}
+
+// 切换canvas背景
+@keyframes bg-switch-to-light {
+  0% {
+    clip-path: inset(100% 100% 100% 100%);
+  }
+  40% {
+    clip-path: inset(33% 33% 33% 33%);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+// 切换canvas背景
+@keyframes bg-switch-to-dark {
+  0% {
+    clip-path: inset(100% 100% 100% 100%);
+  }
+  40% {
+    clip-path: inset(33% 33% 33% 33%);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
   }
 }
 
