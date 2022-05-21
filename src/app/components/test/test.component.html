@@ -4,13 +4,13 @@
     <div class="tools-pancel">
         <div class="tools">
             <!-- 更换背景 -->
-            <div class="paint-back" (click)="changeBack()">
+            <div class="item paint-back" (click)="changeBack()">
                 <span>Background：</span>
                 <div class="bgColor" [ngClass]="{'light': backTheme === 'light', 'dark': backTheme === 'dark'}">
                 </div>
             </div>
             <!-- 自动绘制 -->
-            <div class="auto-paint">
+            <div class="item auto-paint">
                 <span>Automatic Paint：</span>
                 <div class="switch-btn">
                     <input type="checkbox" id="switch" />
@@ -18,12 +18,12 @@
                 </div>
             </div>
             <!-- 颜色面板 -->
-            <div class="Colour">
+            <div class="item Colour">
                 <span>Colour：</span>
-
+                <div class="color-picker"></div>
             </div>
             <!-- 清空 & 截图 -->
-            <div class="btn-groups">
+            <div class="item btn-groups">
                 <button (click)="clearDraw()">Clear</button>
                 <a id="save" href="#" (click)="savePaint()">
                     <svg t="1652963712322" class="icon" viewBox="0 0 1024 1024" version="1.1"

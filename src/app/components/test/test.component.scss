@@ -17,27 +17,9 @@ canvas {
   height: 100%;
 }
 
-#message {
-  color: #e2e2de;
-  font-size: 32px;
-  text-align: center;
-  letter-spacing: 2px;
-  position: fixed;
-  top: 50%;
-  z-index: 0;
-  width: 100%;
-  margin-top: -0.5em;
-  text-shadow: 0 -1px 0 #d3d3d1;
-}
-
-.dg.ac {
-  z-index: 2;
-}
-
 .tools-pancel {
   position: absolute;
   bottom: 0;
-  height: 60px;
   width: 100vw;
   z-index: 1;
   pointer-events: none;
@@ -101,6 +83,17 @@ canvas {
         width: 135px;
       }
     }
+    .Colour {
+      height: 100%;
+      .color-picker {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 1rem;
+      }
+      ::ng-deep .pcr-button {
+        margin-bottom: 6px;
+      }
+    }
   }
 }
 
@@ -127,6 +120,7 @@ canvas {
   animation: 1.5s cubic-bezier(0.25, 1, 0.3, 1) circle-in-top-left 1;
   background-color: #212121;
 }
+
 // 按钮
 .switch-btn {
   width: 5.5rem;
@@ -199,5 +193,20 @@ canvas {
   }
   to {
     clip-path: circle(125%);
+  }
+}
+
+@media screen and (min-width: 760px) {
+  .tools-pancel {
+    height: 60px;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .tools {
+    flex-direction: column;
+    .item {
+      padding: 5px 10px;
+    }
   }
 }
