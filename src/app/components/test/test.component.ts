@@ -281,15 +281,75 @@ export class TestComponent implements OnInit, AfterViewInit {
    * @memberof TestComponent
    */
   doAutoDraw(ctx: any, width: number, height: number) {
-    // var i = 0;
-    // const draw = () => {
-    //   ctx.moveTo(this.random(width), this.random(height));
-    //   ctx.quadraticCurveTo(this.random(width), this.random(height), this.random(width), this.random(height));
-    //   ctx.stroke();
-    //   window.requestAnimationFrame(draw);
-    // }
-    // draw();
+
+    let percent = 0;
+
+    this.darwAnimation = () => {
+      if (percent === 99) {
+        console.log('执行！');
+        this.brush.endStroke();
+      } else {
+        console.log('执行！', percent);
+        ctx.beginPath();
+        this.drawCurvePath(
+          ctx,
+          [100, 100],
+          [200, 300],
+          0.2,
+          percent
+        );
+
+        ctx.stroke();
+
+        percent = (percent + 1) % 100; // 逐渐增加中
+
+        requestAnimationFrame(this.darwAnimation);
+      }
+    }
+
+    this.darwAnimation();
   }
+
+  /**
+   * 绘制一条曲线路径
+   * @param  {Object} ctx canvas渲染上下文
+   * @param  {Array<number>} start 起点
+   * @param  {Array<number>} end 终点
+   * @param  {number} curveness 曲度(0-1)
+   * @param  {number} percent 绘制百分比(0-100)
+   */
+  drawCurvePath(ctx: any, start: Array<number>, end: Array<number>, curveness: number, percent: number) {
+    ctx.beginPath();
+    // 计算中间控制点
+    var cp = [
+      (start[0] + end[0]) / 2 - (start[1] - end[1]) * curveness,
+      (start[1] + end[1]) / 2 - (end[0] - start[0]) * curveness
+    ];
+    var t = percent / 100;
+
+    var p0 = start;
+    var p1 = cp;
+    var p2 = end;
+
+    var v01 = [p1[0] - p0[0], p1[1] - p0[1]];     // 向量<p0, p1>
+    var v12 = [p2[0] - p1[0], p2[1] - p1[1]];     // 向量<p1, p2>
+
+    var q0 = [p0[0] + v01[0] * t, p0[1] + v01[1] * t];
+    var q1 = [p1[0] + v12[0] * t, p1[1] + v12[1] * t];
+
+    var v = [q1[0] - q0[0], q1[1] - q0[1]];       // 向量<q0, q1>
+
+    var b = [q0[0] + v[0] * t, q0[1] + v[1] * t];
+
+    ctx.moveTo(p0[0], p0[1]);
+    ctx.quadraticCurveTo(
+      q0[0], q0[1],
+      b[0], b[1]
+    );
+  }
+
+
+
   randomColor() {
     let r = this.random(256) | 0;
     let g = this.random(256) | 0;
