@@ -37,6 +37,8 @@ export class TestComponent implements OnInit, AfterViewInit {
   @ViewChild('save') aLinkDom!: ElementRef;
   pickr!: Pickr;
   autoDraw: boolean = true;
+  darwAnimation!: () => void;
+  resize!: (e: any) => void;
   constructor() { }
 
 
@@ -118,6 +120,26 @@ export class TestComponent implements OnInit, AfterViewInit {
         this.brush.endStroke();
       }
     };
+    /**
+       * 屏幕缩放会触发！
+       *
+       * @param {*} e
+       * @memberof TestComponent
+       */
+    this.resize = (e: any) => {
+      if (this.canvas) {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.centerX = this.canvas.width * 0.5;
+        this.centerY = this.canvas.height * 0.5;
+        this.context = this.canvas.getContext('2d');
+      }
+      // 不会执行的代码
+      if (this.control) {
+        this.control.clear();
+
+      }
+    }
 
   }
 
@@ -229,19 +251,6 @@ export class TestComponent implements OnInit, AfterViewInit {
       };
   }
 
-  resize(e: any) {
-    if (this.canvas) {
-      this.canvas.width = window.innerWidth;
-      this.canvas.height = window.innerHeight;
-      this.centerX = this.canvas.width * 0.5;
-      this.centerY = this.canvas.height * 0.5;
-      this.context = this.canvas.getContext('2d');
-    }
-    // 不会执行的代码
-    if (this.control) {
-      this.control.clear();
-    }
-  }
 
   /**
    * 清除自动绘制操作
@@ -263,6 +272,14 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * 自动绘制
+   *
+   * @param {*} ctx
+   * @param {number} width
+   * @param {number} height
+   * @memberof TestComponent
+   */
   doAutoDraw(ctx: any, width: number, height: number) {
     // var i = 0;
     // const draw = () => {
