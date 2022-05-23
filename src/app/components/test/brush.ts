@@ -184,7 +184,7 @@ export class Brush {
     // #region 自动绘制需要的变量
     t = 0 // 贝塞尔函数涉及的占比比例，0<=t<=1
     isPrinting = false // 正在绘制中
-    controlPoints: Array<any> = [] // 控制点的数组
+    bezierNodes: Array<any> = [] // 绘制内部控制点的数组
     // #endregion
 
     /**
@@ -211,12 +211,12 @@ export class Brush {
         const next_nodes = []
         points.forEach((item, index) => {
             if (points.length === 1) {
-                this.controlPoints.push(item)
-                if (this.controlPoints.length > 1) {
-                    this.controlPoints.forEach((obj, i) => {
+                this.bezierNodes.push(item)
+                if (this.bezierNodes.length > 1) {
+                    this.bezierNodes.forEach((obj, i) => {
                         if (i) {
-                            let startX = this.controlPoints[i - 1].x;
-                            let startY = this.controlPoints[i - 1].y;
+                            let startX = this.bezierNodes[i - 1].x;
+                            let startY = this.bezierNodes[i - 1].y;
                             let x = obj.x;
                             let y = obj.y;
                             ctx.beginPath()
