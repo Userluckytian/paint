@@ -39,6 +39,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   autoDraw: boolean = true;
   darwAnimation!: () => void;
   resize!: (e: any) => void;
+  interval: any; // 定时器
   constructor() { }
 
 
@@ -268,7 +269,12 @@ export class TestComponent implements OnInit, AfterViewInit {
       } else {
         ctx = this.context
       }
-      this.doAutoDraw(ctx, this.canvas.width, this.canvas.height);
+      const width = this.canvas.width;
+      const height = this.canvas.height;
+      this.doAutoDraw(ctx, width, height);
+    } else {
+      clearInterval(this.interval); // 清除定时器
+      this.interval = null;
     }
   }
 
@@ -276,38 +282,21 @@ export class TestComponent implements OnInit, AfterViewInit {
    * 自动绘制
    *
    * @param {*} ctx
-   * @param {number} width
-   * @param {number} height
    * @memberof TestComponent
    */
   doAutoDraw(ctx: any, width: number, height: number) {
-
-    let percent = 0;
-
-    this.darwAnimation = () => {
-      if (percent === 99) {
-        console.log('执行！');
-        this.brush.endStroke();
-      } else {
-        console.log('执行！', percent);
-        ctx.beginPath();
-        this.drawCurvePath(
-          ctx,
-          [100, 100],
-          [200, 300],
-          0.2,
-          percent
-        );
-
-        ctx.stroke();
-
-        percent = (percent + 1) % 100; // 逐渐增加中
-
-        requestAnimationFrame(this.darwAnimation);
-      }
+    console.log('执行！');
+    const number = this.random(4, 10);
+    const controlPoints = [];
+    for (let index = 0; index < number; index++) {
+      controlPoints.push(
+        { x: this.random(width), y: this.random(height) }
+      )
     }
-
-    this.darwAnimation();
+    this.brush.autoDraw(ctx, controlPoints);
+    this.interval = setTimeout(() => {
+      this.doAutoDraw(ctx, width, height);
+    }, 5000)
   }
 
   /**
