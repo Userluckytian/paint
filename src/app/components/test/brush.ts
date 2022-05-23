@@ -196,7 +196,8 @@ export class Brush {
      */
     autoDraw(ctx: any, points: Array<any>) {
         if (this.t > 1) {
-            this.isPrinting = false
+            this.isPrinting = false;
+            console.log(this.bezierNodes);
             return
         }
         this.isPrinting = true
