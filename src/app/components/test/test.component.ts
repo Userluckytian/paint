@@ -14,8 +14,8 @@ export class TestComponent implements OnInit, AfterViewInit {
   context: any;
   centerX: any;
   centerY: any;
-  mouseX = 0;
-  mouseY = 0;
+  mouseX!: number;
+  mouseY!: number;
   isMouseDown = false;
   brush: any; // brush实例对象！
   gui: any;
@@ -154,18 +154,30 @@ export class TestComponent implements OnInit, AfterViewInit {
     // 默认执行一次清除操作
     this.resize(null);
 
+    // Start Update
+    this.loop();
+
+    const ctx = this.canvas.getContext('2d');
+    const width = this.canvas.width;
+    const height = this.canvas.height;
+    this.doAutoDraw(ctx, width, height);
+  }
+  /**
+   * 添加所有的事件监听
+   *
+   * @memberof TestComponent
+   */
+  addAllListener() {
+    // #region // tag: 自动绘制时关闭监听！
     this.canvas.addEventListener('mousemove', this.mouseMove, false);
     this.canvas.addEventListener('mousedown', this.mouseDown, false);
     this.canvas.addEventListener('mouseout', this.mouseUp, false);
     this.canvas.addEventListener('mouseup', this.mouseUp, false);
-
+    // #endregion
     this.canvas.addEventListener('touchmove', this.touchMove, false);
     this.canvas.addEventListener('touchstart', this.touchStart, false);
     this.canvas.addEventListener('touchcancel', this.touchEnd, false);
     this.canvas.addEventListener('touchend', this.touchEnd, false);
-
-    // Start Update
-    this.loop();
   }
   /**
    * 实例化颜色选择器
@@ -262,6 +274,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.autoDraw = !this.autoDraw;
     console.log('hello', this.autoDraw);
     if (this.autoDraw) {
+      this.closeAllListener()
       // todo: 自动绘制
       let ctx: any = null;
       if (!this.context) {
@@ -273,11 +286,28 @@ export class TestComponent implements OnInit, AfterViewInit {
       const height = this.canvas.height;
       this.doAutoDraw(ctx, width, height);
     } else {
+      this.addAllListener();
       clearInterval(this.interval); // 清除定时器
       this.interval = null;
     }
   }
-
+  /**
+   * 关闭所有事件监听
+   *
+   * @memberof TestComponent
+   */
+  closeAllListener() {
+    this.canvas
+    this.canvas.removeEventListener('mousemove', this.mouseMove);
+    this.canvas.removeEventListener('mousedown', this.mouseDown);
+    this.canvas.removeEventListener('mouseout', this.mouseUp);
+    this.canvas.removeEventListener('mouseup', this.mouseUp);
+    // #endregion
+    this.canvas.removeEventListener('touchmove', this.touchMove);
+    this.canvas.removeEventListener('touchstart', this.touchStart);
+    this.canvas.removeEventListener('touchcancel', this.touchEnd);
+    this.canvas.removeEventListener('touchend', this.touchEnd);
+  }
   /**
    * 自动绘制
    *
@@ -285,7 +315,6 @@ export class TestComponent implements OnInit, AfterViewInit {
    * @memberof TestComponent
    */
   doAutoDraw(ctx: any, width: number, height: number) {
-    console.log('执行！');
     const number = this.random(4, 10);
     const controlPoints = [];
     for (let index = 0; index < number; index++) {
@@ -295,6 +324,11 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
     this.brush.autoDraw(ctx, controlPoints);
     this.interval = setTimeout(() => {
+      // #region // tag: 上色
+      // this.brush.startStroke();
+      // this.brush.splashing = false;
+      // this.brush.dripping = false;
+      // #endregion
       this.doAutoDraw(ctx, width, height);
     }, 5000)
   }
