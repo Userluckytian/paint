@@ -37,6 +37,9 @@ export class TestComponent implements OnInit, AfterViewInit {
   @ViewChild('save') aLinkDom!: ElementRef;
   pickr!: Pickr;
   autoDraw: boolean = true;
+  darwAnimation!: () => void;
+  resize!: (e: any) => void;
+  interval: any; // 定时器
   constructor() { }
 
 
@@ -118,6 +121,26 @@ export class TestComponent implements OnInit, AfterViewInit {
         this.brush.endStroke();
       }
     };
+    /**
+       * 屏幕缩放会触发！
+       *
+       * @param {*} e
+       * @memberof TestComponent
+       */
+    this.resize = (e: any) => {
+      if (this.canvas) {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.centerX = this.canvas.width * 0.5;
+        this.centerY = this.canvas.height * 0.5;
+        this.context = this.canvas.getContext('2d');
+      }
+      // 不会执行的代码
+      if (this.control) {
+        this.control.clear();
+
+      }
+    }
 
   }
 
@@ -229,19 +252,6 @@ export class TestComponent implements OnInit, AfterViewInit {
       };
   }
 
-  resize(e: any) {
-    if (this.canvas) {
-      this.canvas.width = window.innerWidth;
-      this.canvas.height = window.innerHeight;
-      this.centerX = this.canvas.width * 0.5;
-      this.centerY = this.canvas.height * 0.5;
-      this.context = this.canvas.getContext('2d');
-    }
-    // 不会执行的代码
-    if (this.control) {
-      this.control.clear();
-    }
-  }
 
   /**
    * 清除自动绘制操作
@@ -259,20 +269,76 @@ export class TestComponent implements OnInit, AfterViewInit {
       } else {
         ctx = this.context
       }
-      this.doAutoDraw(ctx, this.canvas.width, this.canvas.height);
+      const width = this.canvas.width;
+      const height = this.canvas.height;
+      this.doAutoDraw(ctx, width, height);
+    } else {
+      clearInterval(this.interval); // 清除定时器
+      this.interval = null;
     }
   }
 
+  /**
+   * 自动绘制
+   *
+   * @param {*} ctx
+   * @memberof TestComponent
+   */
   doAutoDraw(ctx: any, width: number, height: number) {
-    // var i = 0;
-    // const draw = () => {
-    //   ctx.moveTo(this.random(width), this.random(height));
-    //   ctx.quadraticCurveTo(this.random(width), this.random(height), this.random(width), this.random(height));
-    //   ctx.stroke();
-    //   window.requestAnimationFrame(draw);
-    // }
-    // draw();
+    console.log('执行！');
+    const number = this.random(4, 10);
+    const controlPoints = [];
+    for (let index = 0; index < number; index++) {
+      controlPoints.push(
+        { x: this.random(width), y: this.random(height) }
+      )
+    }
+    this.brush.autoDraw(ctx, controlPoints);
+    this.interval = setTimeout(() => {
+      this.doAutoDraw(ctx, width, height);
+    }, 5000)
   }
+
+  /**
+   * 绘制一条曲线路径
+   * @param  {Object} ctx canvas渲染上下文
+   * @param  {Array<number>} start 起点
+   * @param  {Array<number>} end 终点
+   * @param  {number} curveness 曲度(0-1)
+   * @param  {number} percent 绘制百分比(0-100)
+   */
+  drawCurvePath(ctx: any, start: Array<number>, end: Array<number>, curveness: number, percent: number) {
+    ctx.beginPath();
+    // 计算中间控制点
+    var cp = [
+      (start[0] + end[0]) / 2 - (start[1] - end[1]) * curveness,
+      (start[1] + end[1]) / 2 - (end[0] - start[0]) * curveness
+    ];
+    var t = percent / 100;
+
+    var p0 = start;
+    var p1 = cp;
+    var p2 = end;
+
+    var v01 = [p1[0] - p0[0], p1[1] - p0[1]];     // 向量<p0, p1>
+    var v12 = [p2[0] - p1[0], p2[1] - p1[1]];     // 向量<p1, p2>
+
+    var q0 = [p0[0] + v01[0] * t, p0[1] + v01[1] * t];
+    var q1 = [p1[0] + v12[0] * t, p1[1] + v12[1] * t];
+
+    var v = [q1[0] - q0[0], q1[1] - q0[1]];       // 向量<q0, q1>
+
+    var b = [q0[0] + v[0] * t, q0[1] + v[1] * t];
+
+    ctx.moveTo(p0[0], p0[1]);
+    ctx.quadraticCurveTo(
+      q0[0], q0[1],
+      b[0], b[1]
+    );
+  }
+
+
+
   randomColor() {
     let r = this.random(256) | 0;
     let g = this.random(256) | 0;

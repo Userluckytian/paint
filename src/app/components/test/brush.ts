@@ -14,10 +14,11 @@ export class Brush {
     _strokeId: string | null = null;
     _drops: any[] = [];
     _tip: any[] = [];
+    requestAnimationFrame: any; // 就这吧，不知道咋说
 
     constructor(x: number = 0, y: number = 0, color?: string, size?: number, inkAmount?: number) {
         console.log(x, y, color);
-        
+
         this.x = x;
         this.y = y
         if (color !== undefined) this.color = color;
@@ -26,12 +27,12 @@ export class Brush {
 
         this._drops = [];
         this._resetTip();
+        this.requestAnimationFrame = this.getAnimationFrame();
     }
 
     isStroke() {
         return Boolean(this._strokeId);
     }
-
 
     startStroke(mouseX?: number, mouseY?: number) {
         if (this.isStroke()) return;
@@ -156,6 +157,136 @@ export class Brush {
                 this.color
             )
             tip.push(hairInstance);
+        }
+    }
+
+
+    /**
+     * 获取 requestAnimationFrame 
+     * 参考文献（下面代码是获取不同浏览器的AnimationFrame）
+     * https://blog.csdn.net/yexudengzhidao/article/details/119640866
+     *
+     * @return {*} 
+     * @memberof TestComponent
+     */
+    getAnimationFrame() {
+        return window.requestAnimationFrame ||
+            // window.webkitRequestAnimationFrame ||
+            // window.mozRequestAnimationFrame ||
+            // window.oRequestAnimationFrame ||
+            // window.msRequestAnimationFrame ||
+            function (callback) {
+                window.setTimeout(callback, 1000 / 60);
+            };
+    }
+
+
+    // #region 自动绘制需要的变量
+    t = 0 // 贝塞尔函数涉及的占比比例，0<=t<=1
+    isPrinting = false // 正在绘制中
+    bezierNodes: Array<any> = [] // 绘制内部控制点的数组
+    // #endregion
+
+    /**
+     * 自动绘制
+     *
+     * @param {*} ctx
+     * @param {Array<any>} points 点集合: [{x:100,y:200}, {x:200,y:215}...]
+     * @memberof Brush
+     */
+    autoDraw(ctx: any, points: Array<any>) {
+        if (this.t >= 1) {
+            this.isPrinting = false;
+            this.bezierNodes = [];
+            this.t = 0;
+            return
+        }
+        this.isPrinting = true
+        this.t += 0.01
+        this.drawnode(ctx, points)
+        this.requestAnimationFrame(this.autoDraw.bind(this, ctx, points))
+    }
+
+
+    drawnode(ctx: any, points: Array<any>) {
+        if (!points.length) return
+        const next_nodes = []
+        points.forEach((item, index) => {
+            if (points.length === 1) {
+                this.bezierNodes.push(item)
+                if (this.bezierNodes.length > 1) {
+                    this.bezierNodes.forEach((obj, i) => {
+                        if (i) {
+                            let startX = this.bezierNodes[i - 1].x;
+                            let startY = this.bezierNodes[i - 1].y;
+                            let x = obj.x;
+                            let y = obj.y;
+                            ctx.beginPath()
+                            ctx.moveTo(startX, startY)
+                            ctx.lineTo(x, y)
+                            ctx.strokeStyle = 'red'
+                            ctx.stroke()
+                        }
+                    })
+                }
+            }
+        })
+        if (points.length) {
+            for (var i = 0; i < points.length - 1; i++) {
+                var arr = [{
+                    x: points[i].x,
+                    y: points[i].y
+                }, {
+                    x: points[i + 1].x,
+                    y: points[i + 1].y
+                }]
+                next_nodes.push(this.bezier(arr, this.t))
+            }
+            this.drawnode(ctx, next_nodes)
+        }
+
+    }
+
+
+    /**
+     * 获取轨迹点
+     *
+     * @param {*} arr
+     * @param {*} t
+     * @return {*} 
+     * @memberof Brush
+     */
+    bezier(arr: Array<any>, t: number) {
+        let x = 0;
+        let y = 0;
+        let n = arr.length - 1;
+        arr.forEach((item, index) => {
+            if (!index) {
+                x += item.x * Math.pow((1 - t), n - index) * Math.pow(t, index)
+                y += item.y * Math.pow((1 - t), n - index) * Math.pow(t, index)
+            } else {
+                x += this.factorial(n) / this.factorial(index) / this.factorial(n - index) * item.x * Math.pow((1 - t), n - index) * Math.pow(t, index)
+                y += this.factorial(n) / this.factorial(index) / this.factorial(n - index) * item.y * Math.pow((1 - t), n - index) * Math.pow(t, index)
+            }
+        })
+        return {
+            x: x,
+            y: y
+        }
+    }
+
+    /**
+     *  从num *... 到1 的n阶方程
+     *
+     * @param {number} num
+     * @return {*} 
+     * @memberof Brush
+     */
+    factorial(num: number): number { //递归阶乘
+        if (num <= 1) {
+            return 1;
+        } else {
+            return num * this.factorial(num - 1);
         }
     }
 
