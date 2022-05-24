@@ -14,8 +14,8 @@ export class TestComponent implements OnInit, AfterViewInit {
   context: any;
   centerX: any;
   centerY: any;
-  mouseX = 0;
-  mouseY = 0;
+  mouseX!: number;
+  mouseY!: number;
   isMouseDown = false;
   brush: any; // brush实例对象！
   gui: any;

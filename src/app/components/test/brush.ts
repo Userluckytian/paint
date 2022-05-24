@@ -2,8 +2,8 @@ import Drop from "./drop";
 import Hair from "./hair";
 export class Brush {
 
-    x = 0;
-    y = 0;
+    x;
+    y;
     color = '#42445a';
     size = 20; // 画笔尺寸
     inkAmount = 5; // 下滴墨水的宽度
