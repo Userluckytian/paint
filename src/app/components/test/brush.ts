@@ -1,15 +1,15 @@
 import Drop from "./drop";
 import Hair from "./hair";
 export class Brush {
-    _SPLASHING_BRUSH_SPEED = 75;
 
     x = 0;
     y = 0;
     color = '#42445a';
     size = 20; // 画笔尺寸
     inkAmount = 5; // 下滴墨水的宽度
-    splashing = true;
-    dripping = true;
+    splashing = true; // 是否洒小墨滴
+    _SPLASHING_BRUSH_SPEED = 75; // 洒墨比率速度
+    dripping = true; // 是否下滴？
     _latestPos: { [key: string]: number } | null = null;
     _strokeId: string | null = null;
     _drops: any[] = [];
@@ -17,7 +17,6 @@ export class Brush {
     requestAnimationFrame: any; // 就这吧，不知道咋说
 
     constructor(x: number = 0, y: number = 0, color?: string, size?: number, inkAmount?: number) {
-        console.log(x, y, color);
 
         this.x = x;
         this.y = y
@@ -130,7 +129,7 @@ export class Brush {
             }
         }
     }
-
+    // tip: 这个是干啥的啊？？？
     _resetTip() {
         let tip: any[] = this._tip = [];
         let rad = this.size * 0.5;
@@ -196,6 +195,9 @@ export class Brush {
      */
     autoDraw(ctx: any, points: Array<any>) {
         if (this.t >= 1) {
+            // #region // tag: 每次绘制完成，关闭绘制操作！
+            this.endStroke();
+            // #endregion
             this.isPrinting = false;
             this.bezierNodes = [];
             this.t = 0;

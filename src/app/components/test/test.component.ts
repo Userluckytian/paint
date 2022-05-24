@@ -153,11 +153,11 @@ export class TestComponent implements OnInit, AfterViewInit {
     window.addEventListener('resize', this.resize, false);
     // 默认执行一次清除操作
     this.resize(null);
-
-    this.canvas.addEventListener('mousemove', this.mouseMove, false);
-    this.canvas.addEventListener('mousedown', this.mouseDown, false);
-    this.canvas.addEventListener('mouseout', this.mouseUp, false);
-    this.canvas.addEventListener('mouseup', this.mouseUp, false);
+     // #region // tag: 自动绘制时关闭监听！
+    // this.canvas.addEventListener('mousemove', this.mouseMove, false);
+    // this.canvas.addEventListener('mousedown', this.mouseDown, false);
+    // this.canvas.addEventListener('mouseout', this.mouseUp, false);
+    // this.canvas.addEventListener('mouseup', this.mouseUp, false);
 
     this.canvas.addEventListener('touchmove', this.touchMove, false);
     this.canvas.addEventListener('touchstart', this.touchStart, false);
@@ -295,6 +295,11 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
     this.brush.autoDraw(ctx, controlPoints);
     this.interval = setTimeout(() => {
+      // #region // tag: 上色
+      // this.brush.startStroke();
+      // this.brush.splashing = false;
+      // this.brush.dripping = false;
+      // #endregion
       this.doAutoDraw(ctx, width, height);
     }, 5000)
   }
