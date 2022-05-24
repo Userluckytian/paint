@@ -194,13 +194,11 @@ export class Brush {
      * @param {Array<any>} points 点集合: [{x:100,y:200}, {x:200,y:215}...]
      * @memberof Brush
      */
-    autoDraw(ctx: any, points: Array<any>, callback: (data: any) => void) {
+    autoDraw(ctx: any, points: Array<any>) {
         if (this.t >= 1) {
             this.isPrinting = false;
-            if (typeof callback === 'function') {
-                this.bezierNodes = [];
-                this.t = 0;
-            }
+            this.bezierNodes = [];
+            this.t = 0;
             return
         }
         this.isPrinting = true
