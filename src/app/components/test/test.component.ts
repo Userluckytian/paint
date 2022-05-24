@@ -158,7 +158,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     // this.canvas.addEventListener('mousedown', this.mouseDown, false);
     // this.canvas.addEventListener('mouseout', this.mouseUp, false);
     // this.canvas.addEventListener('mouseup', this.mouseUp, false);
-
+    // #endregion
     this.canvas.addEventListener('touchmove', this.touchMove, false);
     this.canvas.addEventListener('touchstart', this.touchStart, false);
     this.canvas.addEventListener('touchcancel', this.touchEnd, false);
@@ -285,7 +285,6 @@ export class TestComponent implements OnInit, AfterViewInit {
    * @memberof TestComponent
    */
   doAutoDraw(ctx: any, width: number, height: number) {
-    console.log('执行！');
     const number = this.random(4, 10);
     const controlPoints = [];
     for (let index = 0; index < number; index++) {
