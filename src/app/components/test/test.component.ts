@@ -156,6 +156,11 @@ export class TestComponent implements OnInit, AfterViewInit {
 
     // Start Update
     this.loop();
+
+    const ctx = this.canvas.getContext('2d');
+    const width = this.canvas.width;
+    const height = this.canvas.height;
+    this.doAutoDraw(ctx, width, height);
   }
   /**
    * 添加所有的事件监听
